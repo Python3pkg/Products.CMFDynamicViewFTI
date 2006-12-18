@@ -169,6 +169,7 @@ class BrowserDefaultMixin(Base):
                 new_page.reindexObject(['is_default_page'])
             if old_page is not None:
                 old_page.reindexObject(['is_default_page'])
+            self.reindexObject()
 
     security.declareProtected(ModifyViewTemplate, 'setLayout')
     def setLayout(self, layout):

@@ -55,6 +55,9 @@ def dummyReindex():
     global _globalCatalogCounter
     _globalCatalogCounter += 1
 
+def realDummyReindex(reason):
+    pass
+
 class DummyFolder(BrowserDefaultMixin):
 
     def getTypeInfo(self):
@@ -62,6 +65,12 @@ class DummyFolder(BrowserDefaultMixin):
 
     def hasProperty(self, prop):
         return True
+
+    def getProperty(self, prop, default):
+        return getattr(self, prop, default)
+    
+    def manage_delProperties(self, list):
+        pass
 
     def manage_changeProperties(self, layout=None, default_page=None):
         self.layout = layout
@@ -77,15 +86,15 @@ class TestCachefuBehaviour(CMFDVFTITestCase.CMFDVFTITestCase):
     Anonymous, content -- "Anonymous users are served content object
     views from the proxy cache. These views are purged when content
     objects change." So CacheFu needs to see a real "change" for
-    display changes to be recognised by the cache. A reindex_object is
-    considered a change, as CMFSquidTool patches the catalog's
-    reindexObject().
+    display changes to be recognised by the cache. A reindex_object OF
+    THAT OBJECT is considered a change, as CMFSquidTool patches the
+    catalog's reindexObject().
 
-    Authenticated, content -- "Authenticated users are served pages from
-    memory.  Member ID is used in the ETag because content is
+    Authenticated, content -- "Authenticated users are served pages
+    from memory.  Member ID is used in the ETag because content is
     personalized; the time of the last catalog change is included so
     that the navigation tree stays up to date." So a reindexObject
-    should be enough in this case for CacheFu.
+    anywhere should be enough in this case for CacheFu.
 
     Container, both authenticated and anonymous -- "Both anonymous and
     authenticated users are served pages from memory, not the proxy
@@ -95,7 +104,7 @@ class TestCachefuBehaviour(CMFDVFTITestCase.CMFDVFTITestCase):
     their containers' views when they change.  Member ID is used in
     the ETag because content is personalized; the time of the last
     catalog change is included so that the contents and the navigation
-    tree stays up to date." A reindexObject is enough here.
+    tree stays up to date." A reindexObject anywhere is enough here.
     """
 
     def afterSetUp(self):
@@ -119,6 +128,12 @@ class TestCachefuBehaviour(CMFDVFTITestCase.CMFDVFTITestCase):
         self.failUnless(reindexCountBefore < reindexCountAfter)
 
     def test_catalogChangeOnDefaultPageChange(self):
+        # Make sure our subpage "exists":
+        self.testfolder.grandma_recipes = DummyFolder()
+        self.testfolder.grandma_recipes.reindexObject = realDummyReindex
+        # The real dummy reindex doesn't update the global counter. So
+        # any update of that counter only comes from a reindexObject
+        # on the actual testfolder. Which is what we want.
         global _globalCatalogCounter
         reindexCountBefore = _globalCatalogCounter
         # Name of the layout is not enforced. This test will break
