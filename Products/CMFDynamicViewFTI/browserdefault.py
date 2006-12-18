@@ -174,9 +174,10 @@ class BrowserDefaultMixin(Base):
     def setLayout(self, layout):
         """Set the layout as the current view.
 
-        'layout' should be one of the list returned by getAvailableLayouts(), but it
-        is not enforced. If a default page has been set with setDefaultPage(), it is
-        turned off by calling setDefaultPage(None).
+        'layout' should be one of the list returned by
+        getAvailableLayouts(), but it is not enforced. If a default
+        page has been set with setDefaultPage(), it is turned off by
+        calling setDefaultPage(None).  
         """
         if not (layout and isinstance(layout, basestring)):
             raise ValueError, ("layout must be a non empty string, got %s(%s)" %
@@ -198,7 +199,7 @@ class BrowserDefaultMixin(Base):
                 delattr(self, 'layout')
 
             self.manage_addProperty('layout', layout, 'string')
-
+        self.reindexObject()
         self.setDefaultPage(None)
 
     security.declareProtected(View, 'getDefaultLayout')
