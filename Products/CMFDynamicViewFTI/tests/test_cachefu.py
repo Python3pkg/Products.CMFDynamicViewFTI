@@ -61,11 +61,11 @@ class DummyFolder(BrowserDefaultMixin):
         return self.fti
 
     def hasProperty(self, prop):
-        if prop == 'layout':
-            return True
+        return True
 
-    def manage_changeProperties(self, layout):
+    def manage_changeProperties(self, layout=None, default_page=None):
         self.layout = layout
+        self.default_page = default_page
 
 
 class TestCachefuBehaviour(CMFDVFTITestCase.CMFDVFTITestCase):
@@ -115,12 +115,20 @@ class TestCachefuBehaviour(CMFDVFTITestCase.CMFDVFTITestCase):
         # dependency to ATContentTypes in here (that'd be the easy
         # alternative).
         self.testfolder.setLayout('folder_summary_view')
-        global _globalCatalogCounter
         reindexCountAfter = _globalCatalogCounter
         self.failUnless(reindexCountBefore < reindexCountAfter)
 
     def test_catalogChangeOnDefaultPageChange(self):
-        pass
+        global _globalCatalogCounter
+        reindexCountBefore = _globalCatalogCounter
+        # Name of the layout is not enforced. This test will break
+        # once it is, but I'm probably going to be shot if I add a
+        # dependency to ATContentTypes in here (that'd be the easy
+        # alternative).
+        self.testfolder.setDefaultPage('grandma_recipes')
+        reindexCountAfter = _globalCatalogCounter
+        self.failUnless(reindexCountBefore < reindexCountAfter)
+
 
 
 def test_suite():
