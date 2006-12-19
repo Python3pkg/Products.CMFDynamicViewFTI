@@ -9,6 +9,11 @@ CMFDynamicViewFTI 2.1.1 - Unreleased
       types if you want.
       [hannosch]
 
+    - Added a call to self.reindexObject() upon changes to the layout
+      or to the default page. This notifies CacheFu of those changes,
+      otherwise changes don't look like they're applied to the user.
+      [reinout]
+
 CMFDynamicViewFTI 2.1.0 - Released September 8, 2006
 
     - Implemented fallback to default view:
