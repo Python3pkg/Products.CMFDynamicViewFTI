@@ -8,6 +8,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.interfaces import IDynamicViewTypeInformation
 from types import ClassType
 from zope.interface import implementer
+import collections
 
 
 def safe_hasattr(obj, name, _marker=object()):
@@ -29,7 +30,7 @@ def safe_callable(obj):
         else:
             return isinstance(obj, ClassType)
     else:
-        return callable(obj)
+        return isinstance(obj, collections.Callable)
 
 
 def om_has_key(context, key):
@@ -112,7 +113,7 @@ class DynamicViewTypeInformation(FactoryTypeInformation):
     def getAvailableViewMethods(self, context):
         # Get a list of registered view methods.
         methods = self.view_methods
-        if isinstance(methods, basestring):
+        if isinstance(methods, str):
             methods = (methods, )
         return tuple(methods)
 
@@ -132,7 +133,7 @@ class DynamicViewTypeInformation(FactoryTypeInformation):
             layout = layout()
         if not layout:
             return default
-        if not isinstance(layout, basestring):
+        if not isinstance(layout, str):
             raise TypeError(
                 "layout of %s must be a string, got %s" %
                 (repr(context), type(layout))
@@ -214,7 +215,7 @@ class DynamicViewTypeInformation(FactoryTypeInformation):
             default=default,
             context=context
         )
-        if not isinstance(methodTarget, basestring):
+        if not isinstance(methodTarget, str):
             # nothing to do, method_id is probably None
             return methodTarget
 
